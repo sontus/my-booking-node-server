@@ -25,8 +25,31 @@ async function run() {
       await client.connect();
       console.log('Database Connected!');
       const database = client.db("myBooking");
+      const hotelsCollection = database.collection('hotel');
       const carsCollection = database.collection('car');
+      const flightsCollection = database.collection('flight');
      
+
+    // GET Hotel API
+    app.get('/hotel', async(req, res) => {
+      const cursor  = hotelsCollection.find({});
+      const hotels    = await cursor.toArray();
+      res.send(hotels);
+    });
+    // POST Hotel API
+    app.post('/hotel', async(req, res) => {
+      const hotel     = req.body;
+      const result  = await hotelsCollection.insertOne(hotel);
+      console.log(`hotel Successfully inserted with the _id:${result.insertedId}`);
+      res.json(result);
+    })
+    // FIND SINGLE Hotel API
+    app.get('/hotel/:id', async(req, res) => {
+      const id    = req.params.id;
+      const query = {_id: ObjectId(id)};
+      const hotel   =  await hotelsCollection.findOne(query);
+      res.json(hotel);
+    });
 
     // GET CAR API
     app.get('/car', async(req, res) => {
@@ -44,9 +67,31 @@ async function run() {
     // FIND SINGLE CAR API
     app.get('/car/:id', async(req, res) => {
       const id    = req.params.id;
-      const query = {_id: id};
+      const query = {_id: ObjectId(id)};
       const car   =  await carsCollection.findOne(query);
       res.json(car);
+    });
+
+
+    // GET Flight API
+    app.get('/flight', async(req, res) => {
+      const cursor  = flightsCollection.find({});
+      const flights    = await cursor.toArray();
+      res.send(flights);
+    });
+    // POST Flight API
+    app.post('/flight', async(req, res) => {
+      const flight     = req.body;
+      const result  = await flightsCollection.insertOne(flight);
+      console.log(`flight Successfully inserted with the _id:${result.insertedId}`);
+      res.json(result);
+    })
+    // FIND SINGLE Flight API
+    app.get('/flight/:id', async(req, res) => {
+      const id    = req.params.id;
+      const query = {_id: ObjectId(id)};
+      const flight   =  await flightsCollection.findOne(query);
+      res.json(flight);
     });
 
     } finally {
