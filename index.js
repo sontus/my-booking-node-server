@@ -3,6 +3,8 @@ const { MongoClient }   = require('mongodb');
 const cors              = require('cors')
 const ObjectId          = require('mongodb').ObjectId;
 require('dotenv').config()
+
+
 const app               = express();
 const port              =  process.env.Port|5000;
 
@@ -23,8 +25,29 @@ async function run() {
       await client.connect();
       console.log('Database Connected!');
       const database = client.db("myBooking");
-      const carsCollection = database.collection("Cars");
+      const carsCollection = database.collection('car');
      
+
+    // GET CAR API
+    app.get('/car', async(req, res) => {
+      const cursor  = carsCollection.find({});
+      const cars    = await cursor.toArray();
+      res.send(cars);
+    });
+    // POST CAR API
+    app.post('/car', async(req, res) => {
+      const car     = req.body;
+      const result  = await carsCollection.insertOne(car);
+      console.log(`Car Successfully inserted with the _id:${result.insertedId}`);
+      res.json(result);
+    })
+    // FIND SINGLE CAR API
+    app.get('/car/:id', async(req, res) => {
+      const id    = req.params.id;
+      const query = {_id: id};
+      const car   =  await carsCollection.findOne(query);
+      res.json(car);
+    });
 
     } finally {
         //   await client.close();
